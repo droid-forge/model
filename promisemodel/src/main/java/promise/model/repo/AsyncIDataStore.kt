@@ -43,7 +43,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun save(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun save(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -63,7 +63,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun update(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun update(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -83,7 +83,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun delete(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun delete(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -141,7 +141,7 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun save(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
+  override fun save(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
     res(Any())
   }
 
@@ -164,7 +164,7 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun update(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
+  override fun update(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
     res(Any())
   }
 
@@ -187,7 +187,7 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun delete(t: List<in T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
+  override fun delete(t: List<out T>, res: (Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
     res(Any())
   }
 

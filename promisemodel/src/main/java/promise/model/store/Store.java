@@ -13,7 +13,7 @@
  *
  */
 
-package promise.model;
+package promise.model.store;
 
 import androidx.annotation.Nullable;
 
@@ -22,21 +22,18 @@ import promise.commons.model.Result;
 
 
 /**
- *
  * @param <T>
  * @param <K>
  * @param <X>
  */
 public interface Store<T, K, X extends Throwable> {
   /**
-   *
    * @param k
    * @param callBack
    */
   void get(K k, Result<Extras<T>, X> callBack);
 
   /**
-   *
    * @param k
    * @param t
    * @param callBack
@@ -44,7 +41,6 @@ public interface Store<T, K, X extends Throwable> {
   void delete(K k, T t, Result<Boolean, X> callBack);
 
   /**
-   *
    * @param k
    * @param t
    * @param callBack
@@ -52,7 +48,6 @@ public interface Store<T, K, X extends Throwable> {
   void update(K k, T t, Result<Boolean, X> callBack);
 
   /**
-   *
    * @param k
    * @param t
    * @param callBack
@@ -60,69 +55,80 @@ public interface Store<T, K, X extends Throwable> {
   void save(K k, T t, Result<Boolean, X> callBack);
 
   /**
-   *
    * @param k
    * @param callBack
    */
   void clear(K k, Result<Boolean, X> callBack);
 
   /**
-   *
    * @param callBack
    */
   void clear(Result<Boolean, X> callBack);
 
-  /**
-   *
-   * @param <T>
-   * @param <E>
-   */
-  abstract class StoreExtra<T, E extends Throwable> {
+  default <E extends Throwable> void getExtras(final List<? extends T> list, Result<Extras<T>, E> callBack) {
+    callBack.response(
+        new Extras<T>() {
+          @Nullable
+          @Override
+          public T first() {
+            return list.first();
+          }
+
+          @Nullable
+          @Override
+          public T last() {
+            return list.last();
+          }
+
+          @Override
+          public List<? extends T> all() {
+            return list;
+          }
+
+          @Override
+          public List<? extends T> limit(int limit) {
+            return list.take(limit);
+          }
+
+          @SafeVarargs
+          @Override
+          public final <X> List<? extends T> where(X... x) {
+            return filter(list, x);
+          }
+        });
+  }
+
+  <Y> List<? extends T> filter(List<? extends T> list, Y... y);
+
+  interface Extras<T> {
     /**
-     *
-     * @param list
-     * @param callBack
-     */
-    public void getExtras(final List<? extends T> list, Result<Extras<T>, E> callBack) {
-      callBack.response(
-          new Extras<T>() {
-            @Nullable
-            @Override
-            public T first() {
-              return list.first();
-            }
-
-            @Nullable
-            @Override
-            public T last() {
-              return list.last();
-            }
-
-            @Override
-            public List<? extends T> all() {
-              return list;
-            }
-
-            @Override
-            public List<? extends T> limit(int limit) {
-              return list.take(limit);
-            }
-
-            @SafeVarargs
-            @Override
-            public final <X> List<? extends T> where(X... x) {
-              return filter(list, x);
-            }
-          });
-    }
-
-    /**
-     *
-     * @param list
-     * @param y
-     * @param <Y>
      * @return
      */
-    public abstract <Y> List<? extends T> filter(List<? extends T> list, Y... y);
+    @Nullable
+    T first();
+
+    /**
+     * @return
+     */
+    @Nullable
+    T last();
+
+    /**
+     * @return
+     */
+    List<? extends T> all();
+
+    /**
+     * @param limit
+     * @return
+     */
+    List<? extends T> limit(int limit);
+
+    /**
+     * @param x
+     * @param <X>
+     * @return
+     */
+    <X> List<? extends T> where(X... x);
   }
 }

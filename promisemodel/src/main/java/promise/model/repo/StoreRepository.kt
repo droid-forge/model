@@ -6,6 +6,20 @@ import java.util.*
 import kotlin.reflect.KClass
 
 /**
+ * The interface provides an instance through the {@link Injector#inject(}
+ *
+ * @param T the supertype of what is to be injected
+ */
+interface Injector<out T> {
+  /**
+   * returns any that extends from T
+   *
+   * @param E return type can be T
+   * @return T or its child
+   */
+  fun inject(): T
+}
+/**
  *
  *
  */
@@ -41,7 +55,6 @@ interface StoreHelper<T> {
  * @property store
  */
 class StoreRepository<T>(private val store: StoreHelper<T>) {
-
 
   /**
    *
@@ -112,7 +125,7 @@ class StoreRepository<T>(private val store: StoreHelper<T>) {
    */
   @JvmOverloads
   @Throws(Exception::class)
-  fun save(t: List<in T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
+  fun save(t: List<out T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
     onSetupListener?.onPrepArgs(args)
     if (checkCallbacksNotNull(res, err)) {
       requireNotNull(res) { "response must be provided to together with err" }
@@ -152,7 +165,7 @@ class StoreRepository<T>(private val store: StoreHelper<T>) {
    */
   @JvmOverloads
   @Throws(Exception::class)
-  fun update(t: List<in T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
+  fun update(t: List<out T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
     onSetupListener?.onPrepArgs(args)
     if (checkCallbacksNotNull(res, err)) {
       requireNotNull(res) { "response must be provided to together with err" }
@@ -192,7 +205,7 @@ class StoreRepository<T>(private val store: StoreHelper<T>) {
    */
   @JvmOverloads
   @Throws(Exception::class)
-  fun delete(t: List<in T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
+  fun delete(t: List<out T>, args: MutableMap<String, Any?>?, res: ((Any?) -> Unit)? = null, err: ((Exception) -> Unit)? = null): Any? {
     onSetupListener?.onPrepArgs(args)
     if (checkCallbacksNotNull(res, err)) {
       requireNotNull(res) { "response must be provided to together with err" }

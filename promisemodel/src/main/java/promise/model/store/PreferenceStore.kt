@@ -4,35 +4,29 @@ import android.os.Build
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import promise.commons.model.List
+import promise.commons.model.Result
 import promise.commons.model.function.FilterFunction
 import promise.commons.pref.Preferences
 import promise.commons.util.DoubleConverter
-import promise.commons.model.List
-import promise.commons.model.Result
-import promise.model.Extras
-import promise.model.Store
-
-/**
- * Created on 7/17/18 by yoctopus.
- */
 
 abstract class PreferenceStore<T>(name: String, private val converter: DoubleConverter<T, JSONObject, JSONObject>) : Store<T, String, Throwable> {
   private val preferences: Preferences = Preferences(name)
 
+  override fun <Y : Any?> filter(list: List<out T>, vararg y: Y): List<out T> {
+    return list
+  }
+
   abstract fun findIndexFunction(t: T): FilterFunction<JSONObject>
 
-  override fun get(s: String, callBack: Result<Extras<T>, Throwable>) {
+  override fun get(s: String, callBack: Result<Store.Extras<T>, Throwable>) {
     try {
       val k = preferences.getString(s)
       val array = JSONArray(k)
       if (array.length() == 0) callBack.error(Throwable("Not available"))
       val objects = List<JSONObject>()
       for (i in 0 until array.length()) objects.add(array.getJSONObject(i))
-      object : Store.StoreExtra<T, Throwable>() {
-        override fun <Y> filter(list: List<out T>, vararg y: Y): List<out T> {
-          return list
-        }
-      }.getExtras(
+      getExtras(
           objects.map { jsonObject -> converter.deserialize(jsonObject) },
           callBack)
     } catch (e: JSONException) {
@@ -42,45 +36,45 @@ abstract class PreferenceStore<T>(name: String, private val converter: DoubleCon
   }
 
   override fun delete(s: String, t: T, callBack: Result<Boolean, Throwable>) =
-      get(s, Result<Extras<T>, Throwable>()
-          .responseCallBack { tExtras ->
+      get(s, Result<Store.Extras<T>, Throwable>()
+          .withCallBack { tExtras ->
             val list = tExtras.all()
             val index = list.findIndex { t == it }
             if (index != -1) {
               list.removeAt(index)
               clear(s, Result<Boolean, Throwable>()
-                  .responseCallBack { _ ->
+                  .withCallBack { _ ->
                     list.forEach {
                       save(s, it, Result())
                     }
                   })
             }
           }
-          .errorCallBack { callBack.error(it) })
+          .withErrorCallBack { callBack.error(it) })
 
   override fun update(s: String, t: T, callBack: Result<Boolean, Throwable>) =
-      get(s, Result<Extras<T>, Throwable>()
-          .responseCallBack { tExtras ->
+      get(s, Result<Store.Extras<T>, Throwable>()
+          .withCallBack { tExtras ->
             val list = List(tExtras.all())
             val index = list.findIndex { t == it }
             if (index != -1) {
               list[index] = t
               clear(s, Result<Boolean, Throwable>()
-                  .responseCallBack { _ ->
+                  .withCallBack { _ ->
                     list.forEach {
                       save(s, it, Result())
                     }
                   })
             }
           }
-          .errorCallBack { callBack.error(it) })
+          .withErrorCallBack { callBack.error(it) })
 
   override fun save(s: String, t: T, callBack: Result<Boolean, Throwable>) {
     try {
       var array = JSONArray(preferences.getString(s))
       val objects = List<JSONObject>()
       for (i in 0 until array.length()) objects.add(array.getJSONObject(i))
-      val index = objects.findIndex { jsonObject -> findIndexFunction(t).filter(jsonObject) }
+      val index = objects.findIndex { jsonObject -> findIndexFunction(t).select(jsonObject) }
       if (index != -1) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
           array.remove(index)

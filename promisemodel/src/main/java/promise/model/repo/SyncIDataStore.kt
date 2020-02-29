@@ -44,7 +44,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun save(t: List<in T>, args: Map<String, Any?>? = null): Any?
+  fun save(t: List<out T>, args: Map<String, Any?>? = null): Any?
 
   /**
    *
@@ -64,7 +64,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun update(t: List<in T>, args: Map<String, Any?>? = null): Any?
+  fun update(t: List<out T>, args: Map<String, Any?>? = null): Any?
 
   /**
    *
@@ -84,7 +84,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun delete(t: List<in T>, args: Map<String, Any?>? = null): Any?
+  fun delete(t: List<out T>, args: Map<String, Any?>? = null): Any?
 
   /**
    *
@@ -135,7 +135,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun save(t: List<in T>, args: Map<String, Any?>?): Any? = Any()
+  override fun save(t: List<out T>, args: Map<String, Any?>?): Any? = Any()
 
   /**
    *
@@ -153,7 +153,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun update(t: List<in T>, args: Map<String, Any?>?): Any? = Any()
+  override fun update(t: List<out T>, args: Map<String, Any?>?): Any? = Any()
 
   /**
    *
@@ -171,7 +171,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun delete(t: List<in T>, args: Map<String, Any?>?): Any? = Any()
+  override fun delete(t: List<out T>, args: Map<String, Any?>?): Any? = Any()
 
   /**
    *
