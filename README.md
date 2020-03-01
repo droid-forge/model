@@ -1,9 +1,8 @@
-# Android Promise Commons
-- [v1.0.0]
+# Android Promise Repository
+
 The promise repositories library
 
 # Setup
-- 
 #### build.gradle
 ```
 allprojects {
@@ -37,6 +36,11 @@ Initialize Promise in your main application file, entry point
     Promise.init(this);
   }
 ```
+
+> Note these repositories once created exist throught the lifecycle of the whole application, If a change happens that requires the 
+> repositories to be cleared of the system, for instance a user logout, use clear static method of the repository to cleare cached
+> repositories
+
 #### Stay Updated
 
 # Wiki!
