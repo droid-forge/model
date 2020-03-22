@@ -1,25 +1,38 @@
-package promise.model.store
+/*
+ *  Copyright 2017, Peter Vincent
+ *  Licensed under the Apache License, Version 2.0, Android Promise.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package promise.model
 
 import android.os.Build
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import promise.commons.model.List
-import promise.commons.model.Result
 import promise.commons.model.function.FilterFunction
 import promise.commons.pref.Preferences
+import promise.commons.tx.PromiseResult
 import promise.commons.util.DoubleConverter
 
-abstract class PreferenceStore<T>(name: String, private val converter: DoubleConverter<T, JSONObject, JSONObject>) : Store<T, String, Throwable> {
+abstract class PreferenceStore<T>(name: String,
+                                  private val converter: DoubleConverter<T, JSONObject, JSONObject>) :
+    Store<T, String, Throwable> {
   private val preferences: Preferences = Preferences(name)
 
-  override fun <Y : Any?> filter(list: List<out T>, vararg y: Y): List<out T> {
-    return list
-  }
+  override fun <Y : Any?> filter(list: List<out T>, vararg y: Y): List<out T> = list
 
   abstract fun findIndexFunction(t: T): FilterFunction<JSONObject>
 
-  override fun get(s: String, callBack: Result<Store.Extras<T>, Throwable>) {
+  override fun get(s: String, callBack: PromiseResult<Store.Extras<T>, Throwable>) {
     try {
       val k = preferences.getString(s)
       val array = JSONArray(k)
@@ -35,41 +48,41 @@ abstract class PreferenceStore<T>(name: String, private val converter: DoubleCon
 
   }
 
-  override fun delete(s: String, t: T, callBack: Result<Boolean, Throwable>) =
-      get(s, Result<Store.Extras<T>, Throwable>()
-          .withCallBack { tExtras ->
+  override fun delete(s: String, t: T, callBack: PromiseResult<Boolean, Throwable>) =
+      get(s, PromiseResult<Store.Extras<T>, Throwable>()
+          .withCallback { tExtras ->
             val list = tExtras.all()
             val index = list.findIndex { t == it }
             if (index != -1) {
               list.removeAt(index)
-              clear(s, Result<Boolean, Throwable>()
-                  .withCallBack { _ ->
+              clear(s, PromiseResult<Boolean, Throwable>()
+                  .withCallback { _ ->
                     list.forEach {
-                      save(s, it, Result())
+                      save(s, it, PromiseResult())
                     }
                   })
             }
           }
-          .withErrorCallBack { callBack.error(it) })
+          .withErrorCallback { callBack.error(it) })
 
-  override fun update(s: String, t: T, callBack: Result<Boolean, Throwable>) =
-      get(s, Result<Store.Extras<T>, Throwable>()
-          .withCallBack { tExtras ->
+  override fun update(s: String, t: T, callBack: PromiseResult<Boolean, Throwable>) =
+      get(s, PromiseResult<Store.Extras<T>, Throwable>()
+          .withCallback { tExtras ->
             val list = List(tExtras.all())
             val index = list.findIndex { t == it }
             if (index != -1) {
               list[index] = t
-              clear(s, Result<Boolean, Throwable>()
-                  .withCallBack { _ ->
+              clear(s, PromiseResult<Boolean, Throwable>()
+                  .withCallback { _ ->
                     list.forEach {
-                      save(s, it, Result())
+                      save(s, it, PromiseResult())
                     }
                   })
             }
           }
-          .withErrorCallBack { callBack.error(it) })
+          .withErrorCallback { callBack.error(it) })
 
-  override fun save(s: String, t: T, callBack: Result<Boolean, Throwable>) {
+  override fun save(s: String, t: T, callBack: PromiseResult<Boolean, Throwable>) {
     try {
       var array = JSONArray(preferences.getString(s))
       val objects = List<JSONObject>()
@@ -96,7 +109,7 @@ abstract class PreferenceStore<T>(name: String, private val converter: DoubleCon
     }
   }
 
-  fun save(s: String, list: List<T>, callBack: Result<Boolean, Throwable>) {
+  fun save(s: String, list: List<T>, callBack: PromiseResult<Boolean, Throwable>) {
     try {
       val array = JSONArray(preferences.getString(s))
       val objects = List<JSONObject>()
@@ -116,12 +129,12 @@ abstract class PreferenceStore<T>(name: String, private val converter: DoubleCon
     }
   }
 
-  override fun clear(s: String, callBack: Result<Boolean, Throwable>) {
+  override fun clear(s: String, callBack: PromiseResult<Boolean, Throwable>) {
     preferences.clear(s)
     callBack.response(true)
   }
 
-  override fun clear(callBack: Result<Boolean, Throwable>) {
+  override fun clear(callBack: PromiseResult<Boolean, Throwable>) {
     preferences.clearAll()
     callBack.response(true)
   }

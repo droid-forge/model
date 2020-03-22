@@ -1,4 +1,17 @@
-package promise.model.store
+/*
+ *  Copyright 2017, Peter Vincent
+ *  Licensed under the Apache License, Version 2.0, Android Promise.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package promise.model
 
 import androidx.collection.ArrayMap
 import org.json.JSONException
@@ -8,7 +21,6 @@ import promise.commons.model.Identifiable
 import promise.commons.model.List
 import promise.commons.pref.Preferences
 import promise.commons.util.DoubleConverter
-import promise.model.repo.AbstractSyncIDataStore
 
 const val ID_ARG = "id_arg"
 
@@ -84,7 +96,7 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
    */
   override fun save(t: T, args: Map<String, Any?>?): Pair<T, Any?> {
     val pair = mapToPair(t)
-    preferences.save(pair.first, pair.second.toString())
+    preferences.save(pair.first!!, pair.second.toString())
     return Pair(t, pair.first)
   }
 

@@ -1,21 +1,21 @@
 /*
- *
- *  * Copyright 2017, Peter Vincent
- *  * Licensed under the Apache License, Version 2.0, Promise.
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  * http://www.apache.org/licenses/LICENSE-2.0
- *  * Unless required by applicable law or agreed to in writing,
- *  * software distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *
+ *  Copyright 2017, Peter Vincent
+ *  Licensed under the Apache License, Version 2.0, Android Promise.
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package promise.model.utils;
+package promise.model;
 
 import android.content.Context;
+
+import com.google.gson.Gson;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -26,13 +26,13 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Date;
 
-import promise.commons.Promise;
+import promise.commons.AndroidPromise;
 import promise.commons.data.log.LogUtil;
 import promise.commons.file.Dir;
 
 public class CacheUtil {
   private String TAG = LogUtil.makeTag(CacheUtil.class);
-  private String promise = LogUtil.makeTag(Promise.class);
+  private String promise = LogUtil.makeTag(AndroidPromise.class);
   // The cache directory should look something like this
   private File cacheDirectory;
 
@@ -44,7 +44,7 @@ public class CacheUtil {
   }
 
   public static CacheUtil instance() {
-    return new CacheUtil(Promise.instance().context());
+    return new CacheUtil(AndroidPromise.instance().context());
   }
 
   private static boolean tooOld(long time) {
@@ -84,6 +84,11 @@ public class CacheUtil {
     }
   }
 
+  public <T> T readObject(String url, Class<T> tClass) {
+    Gson gson = new Gson();
+    return gson.fromJson(new String(read(url)), tClass);
+  }
+
   public void write(String url, String data) {
     try {
       String file = cacheDirectory + "/" + convertToCacheName(url);
@@ -93,5 +98,10 @@ public class CacheUtil {
     } catch (Exception e) {
       LogUtil.e(TAG, e);
     }
+  }
+
+  public <T> void writeObject(String url, T data) {
+    Gson gson = new Gson();
+    write(url, gson.toJson(data));
   }
 }
