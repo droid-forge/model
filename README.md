@@ -1,3 +1,4 @@
+
 # Android Promise Repository [![](https://jitpack.io/v/android-promise/model.svg)](https://jitpack.io/#android-promise/model)
 
 The promise repositories library
@@ -12,7 +13,7 @@ The promise repositories library
 **[Next Steps, Credits, Feedback, License](#next-steps)**<br>
 
 ## Setup
-- 
+
 #### build.gradle
 ```
 allprojects {
@@ -73,7 +74,12 @@ A repository should not do any form of data manipulation.
 
 A repository just merges the different data sources appears as if its one source of data.
 
-### Will cover this in the next sections
+> Note these repositories once created exist throught the lifecycle of the whole application, If a change happens that requires the 
+> repositories to be cleared of the system, for instance a user logout, use clear static method of the repository to cleare cached
+> repositories
+
+
+##### Will cover this in the next sections
 ```kotlin
 class ComplexModel : Identifiable<Int> {
   var uId = 0
@@ -133,7 +139,7 @@ val complexStore: StoreRepository<ComplexModel> by lazy {
 }
 ```
 #### Repo Setup
-Each repository should have two stores, asynchronous store and synchronous.
+Each repository should have two stores, asynchronous store and synchronous store.
 
 ##### Asynchronous store
 ```kotlin
@@ -204,6 +210,7 @@ override fun onPostCreate(savedInstanceState: Bundle?) {
   }
 ...
 ```
+
 > We have to pass the number and times arguments to the map argument
 
 ## PreferenceStore
