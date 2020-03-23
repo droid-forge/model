@@ -27,7 +27,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun all(res: (List<out T>, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun findAll(res: (List<out T>?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -36,7 +36,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun one(res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun findOne(res: (T?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -46,7 +46,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun save(t: T, res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun save(t: T, res: (T) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -66,7 +66,7 @@ interface AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  fun update(t: T, res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
+  fun update(t: T, res: (T) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>? = null)
 
   /**
    *
@@ -121,8 +121,8 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun all(res: (List<out T>, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
-      res(List(), Any())
+  override fun findAll(res: (List<out T>?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
+      res(List())
 
   /**
    *
@@ -131,7 +131,7 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun one(res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
+  override fun findOne(res: (T?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) {
     err?.invoke(Exception())
   }
 
@@ -143,8 +143,8 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun save(t: T, res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
-      res(t, Any())
+  override fun save(t: T, res: (T) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
+      res(t)
 
   /**
    *
@@ -166,8 +166,8 @@ open class AbstractAsyncIDataStore<T> : AsyncIDataStore<T> {
    * @param err
    * @param args
    */
-  override fun update(t: T, res: (T, Any?) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
-      res(t, Any())
+  override fun update(t: T, res: (T) -> Unit, err: ((Exception) -> Unit)?, args: Map<String, Any?>?) =
+      res(t)
 
   /**
    *

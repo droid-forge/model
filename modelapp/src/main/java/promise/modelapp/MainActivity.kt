@@ -74,21 +74,21 @@ class MainActivity : AppCompatActivity() {
     setSupportActionBar(toolbar)
 
     fab.setOnClickListener {
-      val model = complexStore.one(ArrayMap<String, Any>().apply {
+      val model = complexStore.findOne(ArrayMap<String, Any>().apply {
         put(ID_ARG, id)
       })
-      select_textview.text = model.first.toString()
+      select_textview.text = model.toString()
       id++
     }
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    val models = complexStore.all(ArrayMap<String, Any>().apply {
+    val models = complexStore.findAll(ArrayMap<String, Any>().apply {
       put(NUMBER_ARG, 10)
       put(TIMES_ARG, 2)
     })
-    val result = "${models.first.toString()} \n meta \n ${models.second}"
+    val result = "${models.toString()} \n meta \n models"
     main_textview.text = result
 
     preferenceStore.save("models",

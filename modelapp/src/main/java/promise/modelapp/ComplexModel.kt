@@ -13,15 +13,16 @@
 
 package promise.modelapp
 
-import org.json.JSONObject
 import promise.commons.data.log.LogUtil
 import promise.commons.model.Identifiable
 import promise.commons.model.List
-import promise.commons.util.DoubleConverter
-import promise.model.AbstractAsyncIDataStore
-import promise.model.AbstractSyncIDataStore
-import promise.model.StoreRepository
+import promise.commons.tx.Either
+import promise.commons.tx.Left
+import promise.commons.tx.Right
+import promise.model.AbstractEitherIDataStore
 import promise.model.PreferenceDatabase
+import promise.model.Repository
+import promise.model.StoreRepository
 
 class ComplexModel : Identifiable<Int> {
   var uId = 0
@@ -45,16 +46,19 @@ const val ID_ARG = "id_arg"
  *
  */
 
-class SyncComplexModelStore(private val preferenceDatabase: PreferenceDatabase<Int, ComplexModel>) : AbstractSyncIDataStore<ComplexModel>() {
+class SyncComplexModelStore(
+    private val preferenceDatabase: PreferenceDatabase<Int, ComplexModel>) :
+    AbstractEitherIDataStore<ComplexModel>() {
+
   val TAG = LogUtil.makeTag(SyncComplexModelStore::class.java)
 
-  override fun all(args: Map<String, Any?>?): Pair<List<ComplexModel>?, Any?> {
+  override fun findAll(args: Map<String, Any?>?): Either<List<out ComplexModel>, Exception> {
     if (args == null) throw IllegalArgumentException("number and times args must be passed")
     val number = args[NUMBER_ARG] as Int
     val times = args[TIMES_ARG] as Int
     LogUtil.e(TAG, "repo args ", number, times)
-    val savedModels = preferenceDatabase.all().first
-    return if (savedModels.isEmpty()) {
+    val savedModels = preferenceDatabase.findAll()
+    return Right(if (savedModels.isEmpty()) {
       val models = List<ComplexModel>()
       (0 until number * times).forEach {
         models.add(ComplexModel().apply {
@@ -63,21 +67,20 @@ class SyncComplexModelStore(private val preferenceDatabase: PreferenceDatabase<I
           isModel = getId().rem(2) == 0
         })
       }
-      Pair(models, preferenceDatabase.save(models))
-    } else Pair(List(savedModels), "from cache")
+      preferenceDatabase.save(models)
+      models
+    } else List(savedModels))
   }
 
-  override fun one(args: Map<String, Any?>?): Pair<ComplexModel?, Any?> {
+  override fun findOne(args: Map<String, Any?>?): Either<ComplexModel, Exception> {
     if (args == null || !args.containsKey(ID_ARG)) throw IllegalArgumentException("ID_ARG must be passed in args")
-    return preferenceDatabase.one(args)
+    val model = preferenceDatabase.findOne(args)
+    return if (model != null) Right(model) else Left(Exception("model not found"))
   }
 }
 
-class AsyncComplexModelStore : AbstractAsyncIDataStore<ComplexModel>()
-
-val complexStore: StoreRepository<ComplexModel> by lazy {
+val complexStore: Repository<ComplexModel> by lazy {
   StoreRepository.of(
       SyncComplexModelStore::class,
-      AsyncComplexModelStore::class,
       arrayOf(preferenceDatabase))
 }

@@ -42,7 +42,7 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
   /**
    *
    */
-  override fun all(args: Map<String, Any?>?): Pair<List<out T>, Any?> {
+  override fun findAll(args: Map<String, Any?>?): List<out T> {
     val list = List<T>()
     for ((key, value) in preferences.all) {
       val `val` = value as String
@@ -54,22 +54,22 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
         LogUtil.e(TAG, "error de-serializing  ", `val`)
       }
     }
-    return Pair(list, "all items")
+    return list
   }
 
-  override fun one(args: Map<String, Any?>?): Pair<T?, Any?> {
+  override fun findOne(args: Map<String, Any?>?): T? {
     if (args == null || !args.containsKey(ID_ARG)) throw IllegalArgumentException("ID_ARG must be passed in args")
     val id = args[ID_ARG] as ID
     val prefKey = idMapper.serialize(id)
     val prefValue = preferences.getString(prefKey)
-    if (prefValue.isEmpty()) return Pair(null, "not found")
-    return Pair(converter.deserialize(JSONObject(prefValue)), prefKey)
+    if (prefValue.isEmpty()) return null
+    return converter.deserialize(JSONObject(prefValue))
   }
   /**
    *
    */
   @Throws(Exception::class)
-  fun all(args: Map<String, *>?, mapFilter: MapFilter<in T>): List<out T> {
+  fun findAll(args: Map<String, *>?, mapFilter: MapFilter<in T>): List<out T> {
     val list = List<T>()
     for ((key, value) in preferences.all) {
       val `val` = value as String
@@ -94,10 +94,10 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
   /**
    *
    */
-  override fun save(t: T, args: Map<String, Any?>?): Pair<T, Any?> {
+  override fun save(t: T, args: Map<String, Any?>?): T {
     val pair = mapToPair(t)
     preferences.save(pair.first!!, pair.second.toString())
-    return Pair(t, pair.first)
+    return t
   }
 
   /**
@@ -134,7 +134,7 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
   /**
    *
    */
-  override fun update(t: T, args: Map<String, Any?>?): Pair<T, Any?> = save(t, args)
+  override fun update(t: T, args: Map<String, Any?>?): T = save(t, args)
 
   /**
    *

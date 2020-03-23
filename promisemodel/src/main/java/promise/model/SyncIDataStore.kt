@@ -28,7 +28,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun all(args: Map<String, Any?>? = null): Pair<List<out T>?, Any?>
+  fun findAll(args: Map<String, Any?>? = null): List<out T>?
 
   /**
    *
@@ -37,7 +37,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun one(args: Map<String, Any?>? = null): Pair<T?, Any?>
+  fun findOne(args: Map<String, Any?>? = null): T?
 
   /**
    *
@@ -47,7 +47,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun save(t: T, args: Map<String, Any?>? = null): Pair<T, Any?>
+  fun save(t: T, args: Map<String, Any?>? = null): T
 
   /**
    *
@@ -67,7 +67,7 @@ interface SyncIDataStore<T> {
    * @return
    */
   @Throws(Exception::class)
-  fun update(t: T, args: Map<String, Any?>? = null): Pair<T, Any?>
+  fun update(t: T, args: Map<String, Any?>? = null): T
 
   /**
    *
@@ -122,7 +122,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun all(args: Map<String, Any?>?): Pair<List<out T>?, Any?> = Pair(List(), Any())
+  override fun findAll(args: Map<String, Any?>?): List<out T>? = List()
 
   /**
    *
@@ -130,7 +130,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun one(args: Map<String, Any?>?): Pair<T?, Any?> = Pair(null, Any())
+  override fun findOne(args: Map<String, Any?>?): T? = null
 
   /**
    *
@@ -139,7 +139,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun save(t: T, args: Map<String, Any?>?): Pair<T, Any?> = Pair(t, Any())
+  override fun save(t: T, args: Map<String, Any?>?): T = t
 
   /**
    *
@@ -157,7 +157,7 @@ open class AbstractSyncIDataStore<T>: SyncIDataStore<T> {
    * @param args
    * @return
    */
-  override fun update(t: T, args: Map<String, Any?>?): Pair<T, Any?> = Pair(t, Any())
+  override fun update(t: T, args: Map<String, Any?>?): T = t
 
   /**
    *
