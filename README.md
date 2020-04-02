@@ -32,7 +32,7 @@ android {
 
 dependencies {
      implementation 'com.github.android-promise:model:TAG'
-     implementation 'com.github.android-promise:commons:1.1-alpha07'
+     implementation 'com.github.android-promise:commons:1.1-beta02'
 }
 
 ```

@@ -52,7 +52,7 @@ class SyncComplexModelStore(
 
   val TAG = LogUtil.makeTag(SyncComplexModelStore::class.java)
 
-  override fun findAll(args: Map<String, Any?>?): Either<List<out ComplexModel>, Exception> {
+  override fun findAll(args: Map<String, Any?>?): Either<List<out ComplexModel>> {
     if (args == null) throw IllegalArgumentException("number and times args must be passed")
     val number = args[NUMBER_ARG] as Int
     val times = args[TIMES_ARG] as Int
@@ -72,10 +72,11 @@ class SyncComplexModelStore(
     } else List(savedModels))
   }
 
-  override fun findOne(args: Map<String, Any?>?): Either<ComplexModel, Exception> {
+  override fun findOne(args: Map<String, Any?>?): Either<ComplexModel> {
     if (args == null || !args.containsKey(ID_ARG)) throw IllegalArgumentException("ID_ARG must be passed in args")
     val model = preferenceDatabase.findOne(args)
-    return if (model != null) Right(model) else Left(Exception("model not found"))
+    return if (model != null) Right(model) else
+      Left(Exception("model not found"))
   }
 }
 

@@ -28,7 +28,7 @@ import java.util.Date;
 
 import promise.commons.AndroidPromise;
 import promise.commons.data.log.LogUtil;
-import promise.commons.file.Dir;
+import promise.commons.file.Directory;
 
 public class CacheUtil {
   private String TAG = LogUtil.makeTag(CacheUtil.class);
@@ -37,9 +37,9 @@ public class CacheUtil {
   private File cacheDirectory;
 
   private CacheUtil(Context context) {
-    if (Dir.isWritable()) {
+    if (Directory.isWritable()) {
       cacheDirectory = context.getCacheDir();
-      Dir.make(cacheDirectory.getAbsolutePath());
+      Directory.make(cacheDirectory.getAbsolutePath());
     }
   }
 

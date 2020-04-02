@@ -43,7 +43,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.github.android-promise:commons:1.1-alpha07'
+    implementation 'com.github.android-promise:commons:1.1-beta02'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
     implementation project(path: ':promisemodel')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

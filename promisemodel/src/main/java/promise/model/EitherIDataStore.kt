@@ -26,7 +26,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun findAll(args: Map<String, Any?>? = null): Either<List<out T>, Exception>
+  fun findAll(args: Map<String, Any?>? = null): Either<List<out T>>
 
   /**
    *
@@ -35,17 +35,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun findOne(args: Map<String, Any?>? = null): Either<T, Exception>
-
-  /**
-   *
-   *
-   * @param t
-   * @param args
-   * @return
-   */
-  @Throws(Exception::class)
-  fun save(t: T, args: Map<String, Any?>? = null): Either<T, Exception>
+  fun findOne(args: Map<String, Any?>? = null): Either<T>
 
   /**
    *
@@ -55,7 +45,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun save(t: List<out T>, args: Map<String, Any?>? = null): Either<Any, Exception>
+  fun save(t: T, args: Map<String, Any?>? = null): Either<T>
 
   /**
    *
@@ -65,7 +55,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun update(t: T, args: Map<String, Any?>? = null): Either<T, Exception>
+  fun save(t: List<out T>, args: Map<String, Any?>? = null): Either<Any>
 
   /**
    *
@@ -75,7 +65,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun update(t: List<out T>, args: Map<String, Any?>? = null): Either<Any, Exception>
+  fun update(t: T, args: Map<String, Any?>? = null): Either<T>
 
   /**
    *
@@ -85,7 +75,7 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun delete(t: T, args: Map<String, Any?>? = null): Either<Any, Exception>
+  fun update(t: List<out T>, args: Map<String, Any?>? = null): Either<Any>
 
   /**
    *
@@ -95,7 +85,17 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun delete(t: List<out T>, args: Map<String, Any?>? = null): Either<Any, Exception>
+  fun delete(t: T, args: Map<String, Any?>? = null): Either<Any>
+
+  /**
+   *
+   *
+   * @param t
+   * @param args
+   * @return
+   */
+  @Throws(Exception::class)
+  fun delete(t: List<out T>, args: Map<String, Any?>? = null): Either<Any>
 
   /**
    *
@@ -104,33 +104,31 @@ interface EitherIDataStore<T: Any> {
    * @return
    */
   @Throws(Exception::class)
-  fun clear(args: Map<String, Any?>? = null): Either<Any, Exception>
+  fun clear(args: Map<String, Any?>? = null): Either<Any>
 }
 
 open class AbstractEitherIDataStore<T: Any>: EitherIDataStore<T> {
-  override fun findAll(args: Map<String, Any?>?): Either<List<out T>, Exception> = Right(List())
+  override fun findAll(args: Map<String, Any?>?): Either<List<out T>> = Right(List())
 
-  override fun findOne(args: Map<String, Any?>?): Either<T, Exception> =
+  override fun findOne(args: Map<String, Any?>?): Either<T> = Right(null)
+
+
+  override fun save(t: T, args: Map<String, Any?>?): Either<T> = Right(t)
+
+  override fun save(t: List<out T>, args: Map<String, Any?>?): Either<Any> =
       Left(Exception("please override"))
 
-  override fun save(t: T, args: Map<String, Any?>?): Either<T, Exception> =
+  override fun update(t: T, args: Map<String, Any?>?): Either<T> = Right(t)
+
+  override fun update(t: List<out T>, args: Map<String, Any?>?): Either<Any> =
       Left(Exception("please override"))
 
-  override fun save(t: List<out T>, args: Map<String, Any?>?): Either<Any, Exception> =
+  override fun delete(t: T, args: Map<String, Any?>?): Either<Any> =
       Left(Exception("please override"))
 
-  override fun update(t: T, args: Map<String, Any?>?): Either<T, Exception> =
-      Left(Exception("please override"))
-
-  override fun update(t: List<out T>, args: Map<String, Any?>?): Either<Any, Exception> =
-      Left(Exception("please override"))
-
-  override fun delete(t: T, args: Map<String, Any?>?): Either<Any, Exception> =
-      Left(Exception("please override"))
-
-  override fun delete(t: List<out T>, args: Map<String, Any?>?): Either<Any, Exception> {
+  override fun delete(t: List<out T>, args: Map<String, Any?>?): Either<Any> {
     return Left(Exception("please override"))
   }
 
-  override fun clear(args: Map<String, Any?>?): Either<Any, Exception> = Left(Exception("please override"))
+  override fun clear(args: Map<String, Any?>?): Either<Any> = Left(Exception("please override"))
 }

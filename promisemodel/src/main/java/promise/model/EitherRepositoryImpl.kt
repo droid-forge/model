@@ -33,7 +33,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.findAll(args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
 
     } else return store.inject()!!.findAll(args).foldSync()
@@ -47,7 +47,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.findOne(args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.findOne(args).foldSync()
     return null
@@ -58,9 +58,9 @@ class EitherRepositoryImpl <T: Any>(
     if (checkCallbacksNotNull(res, err)) {
       requireNotNull(res) { "response must be provided to together with err" }
       store.inject()!!.save(t, args).fold({
-        res(it)
+        res(it!!)
       },{
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
 
     } else return store.inject()!!.save(t, args).foldSync()!!
@@ -74,7 +74,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.save(t, args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.save(t, args).foldSync()
     return null
@@ -85,9 +85,9 @@ class EitherRepositoryImpl <T: Any>(
     if (checkCallbacksNotNull(res, err)) {
       requireNotNull(res) { "response must be provided to together with err" }
       store.inject()!!.update(t, args).fold({
-        res(it)
+        res(it!!)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.update(t, args).foldSync()!!
     return t
@@ -100,7 +100,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.update(t, args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.update(t, args).foldSync()
     return null
@@ -113,7 +113,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.delete(t, args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.delete(t, args).foldSync()
     return null
@@ -126,7 +126,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.delete(t, args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.delete(t, args).foldSync()
     return null
@@ -139,7 +139,7 @@ class EitherRepositoryImpl <T: Any>(
       store.inject()!!.clear(args).fold({
         res(it)
       }, {
-        err?.invoke(it)
+        err?.invoke(it as Exception)
       })
     } else return store.inject()!!.clear(args).foldSync()
     return null
