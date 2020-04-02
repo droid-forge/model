@@ -13,6 +13,7 @@
 
 package promise.modelapp
 
+import androidx.collection.ArrayMap
 import promise.commons.data.log.LogUtil
 import promise.commons.model.Identifiable
 import promise.commons.model.List
@@ -20,6 +21,7 @@ import promise.commons.tx.Either
 import promise.commons.tx.Left
 import promise.commons.tx.Right
 import promise.model.AbstractEitherIDataStore
+import promise.model.CLASS_ARG
 import promise.model.PreferenceDatabase
 import promise.model.Repository
 import promise.model.StoreRepository
@@ -47,17 +49,19 @@ const val ID_ARG = "id_arg"
  */
 
 class SyncComplexModelStore(
-    private val preferenceDatabase: PreferenceDatabase<Int, ComplexModel>) :
+    private val preferenceDatabase: PreferenceDatabase<ComplexModel>) :
     AbstractEitherIDataStore<ComplexModel>() {
 
-  val TAG = LogUtil.makeTag(SyncComplexModelStore::class.java)
+  val TAG: String = LogUtil.makeTag(SyncComplexModelStore::class.java)
 
   override fun findAll(args: Map<String, Any?>?): Either<List<out ComplexModel>> {
     if (args == null) throw IllegalArgumentException("number and times args must be passed")
     val number = args[NUMBER_ARG] as Int
     val times = args[TIMES_ARG] as Int
     LogUtil.e(TAG, "repo args ", number, times)
-    val savedModels = preferenceDatabase.findAll()
+    val savedModels = preferenceDatabase.findAll(ArrayMap<String, Any>().apply {
+      put(CLASS_ARG, ComplexModel::class.java)
+    })
     return Right(if (savedModels.isEmpty()) {
       val models = List<ComplexModel>()
       (0 until number * times).forEach {

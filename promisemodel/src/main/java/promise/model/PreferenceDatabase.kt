@@ -14,6 +14,7 @@
 package promise.model
 
 import androidx.collection.ArrayMap
+import com.google.gson.Gson
 import org.json.JSONException
 import org.json.JSONObject
 import promise.commons.data.log.LogUtil
@@ -21,12 +22,15 @@ import promise.commons.model.Identifiable
 import promise.commons.model.List
 import promise.commons.pref.Preferences
 import promise.commons.util.DoubleConverter
+import java.lang.IllegalStateException
 
 const val ID_ARG = "id_arg"
+const val CLASS_ARG = "class_arg"
 
-class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
-                                                         private val idMapper: DoubleConverter<ID, String, String>,
-                                                         private val converter: DoubleConverter<T, JSONObject, JSONObject>)
+class PreferenceDatabase<T : Identifiable<*>>
+@JvmOverloads constructor (name: String,
+                           private val converter: DoubleConverter<T, JSONObject, JSONObject>? = null)
+
   : AbstractSyncIDataStore<T>() {
   /**
    *
@@ -36,20 +40,22 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
   /**
    *
    */
-  private fun mapToPair(t: T): Pair<String?, JSONObject?> =
-      Pair<String, JSONObject?>(idMapper.serialize(t.getId()), converter.serialize(t))
+  private fun mapToPair(t: T): Pair<String?, JSONObject?> {
+    val id = t.getId()
+    if (isWrapperType(id!!.javaClass))
+      return Pair<String, JSONObject?>(id.toString(), converter?.serialize(t) ?: JSONObject(gson.toJson(t)))
+    else throw IllegalStateException("id must be primitive type")
+  }
 
   /**
    *
    */
   override fun findAll(args: Map<String, Any?>?): List<out T> {
     val list = List<T>()
-    for ((key, value) in preferences.all) {
+    for ((_, value) in preferences.all) {
       val `val` = value as String
       try {
-        list.add(converter.deserialize(JSONObject(`val`)).apply {
-          setId(idMapper.deserialize(key))
-        })
+        list.add(converter?.deserialize(JSONObject(`val`)) ?: gson.fromJson(`val`, args!![CLASS_ARG] as Class<T>))
       } catch (e: JSONException) {
         LogUtil.e(TAG, "error de-serializing  ", `val`)
       }
@@ -59,11 +65,11 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
 
   override fun findOne(args: Map<String, Any?>?): T? {
     if (args == null || !args.containsKey(ID_ARG)) throw IllegalArgumentException("ID_ARG must be passed in args")
-    val id = args[ID_ARG] as ID
-    val prefKey = idMapper.serialize(id)
+    val id = args[ID_ARG]
+    val prefKey = id.toString()
     val prefValue = preferences.getString(prefKey)
     if (prefValue.isEmpty()) return null
-    return converter.deserialize(JSONObject(prefValue))
+    return converter?.deserialize(JSONObject(prefValue)) ?: gson.fromJson(prefValue, args!![CLASS_ARG] as Class<T>)
   }
   /**
    *
@@ -73,10 +79,7 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
     val list = List<T>()
     for ((key, value) in preferences.all) {
       val `val` = value as String
-      list.add(converter.deserialize(JSONObject(`val`))
-          .apply {
-            setId(idMapper.deserialize(key))
-          })
+      list.add(converter?.deserialize(JSONObject(`val`)) ?: gson.fromJson(`val`, args!![CLASS_ARG] as Class<T>))
     }
     return list.filter { t: T -> mapFilter.filter(t, args) }
   }
@@ -117,7 +120,7 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
    *
    */
   override fun delete(t: T, args: Map<String, Any?>?): Any? {
-    preferences.clear(idMapper.serialize(t.getId()))
+    preferences.clear(t.getId().toString())
     return "deleted"
   }
 
@@ -149,9 +152,27 @@ class PreferenceDatabase<ID : Any, T : Identifiable<ID>>(name: String,
   }
 
   companion object {
+
+    val gson: Gson = Gson()
     /**
      *
      */
     private val TAG = LogUtil.makeTag(PreferenceDatabase::class.java)
+
+
+    fun isWrapperType(clazz: Class<*>?): Boolean = getWrapperTypes().contains(clazz)
+
+    private fun getWrapperTypes(): Set<Class<*>> {
+      val ret: MutableSet<Class<*>> = HashSet()
+      ret.add(Boolean::class.java)
+      ret.add(Char::class.java)
+      ret.add(Byte::class.java)
+      ret.add(Short::class.java)
+      ret.add(Int::class.java)
+      ret.add(Long::class.java)
+      ret.add(Float::class.java)
+      ret.add(Double::class.java)
+      return ret
+    }
   }
 }

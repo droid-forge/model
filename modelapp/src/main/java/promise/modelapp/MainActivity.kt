@@ -25,10 +25,10 @@ import promise.commons.tx.PromiseResult
 import promise.commons.util.DoubleConverter
 import promise.model.CacheUtil
 import promise.model.PreferenceDatabase
-import promise.model.PreferenceStore
-import promise.model.Store
+import promise.model.PreferenceKeyStore
+import promise.model.KeyStore
 
-val preferenceStore: PreferenceStore<ComplexModel> = object : PreferenceStore<ComplexModel>("name of file",
+val preferenceStore: PreferenceKeyStore<ComplexModel> = object : PreferenceKeyStore<ComplexModel>("name of file",
     object: DoubleConverter<ComplexModel, JSONObject, JSONObject> {
       override fun deserialize(e: JSONObject): ComplexModel = ComplexModel().apply {
         uId = e.getInt("uId")
@@ -47,12 +47,8 @@ val preferenceStore: PreferenceStore<ComplexModel> = object : PreferenceStore<Co
 
 }
 
-val preferenceDatabase: PreferenceDatabase<Int, ComplexModel> = PreferenceDatabase("models",
-    object : DoubleConverter<Int, String, String> {
-      override fun deserialize(e: String): Int = e.toInt()
-      override fun serialize(t: Int): String = t.toString()
-    },
-    object : DoubleConverter<ComplexModel, JSONObject, JSONObject> {
+val preferenceDatabase: PreferenceDatabase<ComplexModel> = PreferenceDatabase("models"
+        /*object : DoubleConverter<ComplexModel, JSONObject, JSONObject> {
       override fun deserialize(e: JSONObject): ComplexModel = ComplexModel().apply {
         name = e.getString("name")
         isModel = e.getBoolean("isModel")
@@ -62,7 +58,7 @@ val preferenceDatabase: PreferenceDatabase<Int, ComplexModel> = PreferenceDataba
         put("name", t.name)
         put("isModel", t.isModel)
       }
-    })
+    }*/)
 
 class MainActivity : AppCompatActivity() {
 
@@ -106,7 +102,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-    preferenceStore.get("models", PromiseResult<Store.Extras<ComplexModel>, Throwable>()
+    preferenceStore.get("models", PromiseResult<KeyStore.Extras<ComplexModel>, Throwable>()
         .withCallback {
           val items = it.all()
           // use items
